@@ -21,10 +21,18 @@ WINDOW = 60  # readings shown in trend charts
 def load_model():
     return joblib.load("pdm_model.pkl")
 
-
 @st.cache_data
 def load_data():
-    return pd.read_csv("machine_data.csv")
+    df = pd.read_csv("ai4i2020.csv")
+    df = df.rename(columns={'Air temperature [K]': 'air_temp',
+                            'Process temperature [K]': 'process_temp',
+                            'Rotational speed [rpm]': 'speed',
+                            'Torque [Nm]': 'torque',
+                            'Tool wear [min]': 'tool_wear'})
+    df['temp_diff'] = df['process_temp'] - df['air_temp']
+    df['power'] = df['torque'] * df['speed'] * 2 * np.pi / 60
+    return df
+    
 
 
 bundle = load_model()
